@@ -3,13 +3,13 @@ BONUS_NAME = philosophers_bonus
 CC = cc
 CFLAGS = -Wall -Wextra -Werror -pthread
 
-SRCS = ./src/philosophers.c  ./src/mini_lib.c ./src/parrsing.c
+SRCS = ./src/philosophers.c  ./src/mini_lib.c ./src/parrsing.c ./src/ft_itoa_nosigne.c 
 BONUS_SRCS = bonus/philosophers_bonus.c
 OBJS = $(SRCS:.c=.o)
 BONUS_OBJS = $(BONUS_SRCS:.c=.o)
 
 
-
+robbyrussell
 HEADERS = ./include
 
 # COLOR #
@@ -101,23 +101,23 @@ ${BONUS_NAME} : $(BONUS_OBJS)
 
 clean:
 	@for obj in $(OBJS); do \
-		printf "$(RED)Cleaning Libft...  Removing $$obj... " && \
+		printf "$(RED)Cleaning $(NAME)...  Removing $$obj... " && \
 		sleep 0.01 && \
 		rm -f $$obj && \
 		printf "\r"; \
 	done
 	@for obj in $(BONUS_OBJS); do \
-		printf "$(RED)Cleaning Libft...  Removing $$obj... " && \
+		printf "$(RED)Cleaning $(BONUS_NAME)...  Removing $$obj... " && \
 		sleep 0.01 && \
 		rm -f $$obj && \
 		printf "\r"; \
 	done
 
-	@printf "                                                      \r$(GREEN)push_swap is Clean\n$(RESET)"
+	@printf "                                                                                                          \r$(GREEN)$(NAME) is Clean\n$(RESET)"
 
 	
 fclean: clean
-	@rm -f $(NAME) $(BONUS_NAME) ${BONUS_NAME}
+	@rm -f $(NAME) $(BONUS_NAME) 
 	
 re: fclean all
 

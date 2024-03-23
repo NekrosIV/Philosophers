@@ -6,7 +6,7 @@
 /*   By: kasingh <kasingh@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/21 18:27:37 by kasingh           #+#    #+#             */
-/*   Updated: 2024/03/21 18:49:01 by kasingh          ###   ########.fr       */
+/*   Updated: 2024/03/22 16:05:52 by kasingh          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,18 @@ int	ft_strlen(char *s)
 	return (i);
 }
 
+void	ft_error(char *s)
+{
+	ft_putstr_fd("Error : ", 2);
+	ft_putstr_fd(s, 2);
+	exit(1);
+}
+
+void	ft_putstr_fd(char *s, int fd)
+{
+	write(fd, s, ft_strlen(s));
+}
+
 int	ft_atoi(char *s)
 {
 	int	i;
@@ -29,10 +41,10 @@ int	ft_atoi(char *s)
 
 	i = 0;
 	res = 0;
-	if (s[i] == '+')
+	while (s[i] == ' ' || (s[i] >= 9 && s[i] <= 13))
 		i++;
-	if (s[i] == '-')
-		ft_error("Negative number not allowed\n");
+	if (s[i] == '+' || s[i] == '-')
+		i++;
 	while (s[i])
 	{
 		res = res * 10 + s[i] - '0';
@@ -41,14 +53,18 @@ int	ft_atoi(char *s)
 	return (res);
 }
 
-void	ft_putstr_fd(char *s, int fd)
+int	ft_strncmp(const char *s1, const char *s2, size_t n)
 {
-	write(fd, s, ft_strlen(s));
-}
+	size_t	i;
 
-void	ft_error(char *s)
-{
-	ft_putstr_fd("Error : ", 2);
-	ft_putstr_fd(s, 2);
-	exit(1);
+	i = 0;
+	while ((s1[i] || s2[i]) && (i < n))
+	{
+		if ((unsigned char)(s1[i]) > (unsigned char)(s2[i]))
+			return (1);
+		if ((unsigned char)(s1[i]) < (unsigned char)(s2[i]))
+			return (-1);
+		i++;
+	}
+	return (0);
 }
