@@ -3,13 +3,13 @@ BONUS_NAME = philosophers_bonus
 CC = cc
 CFLAGS = -Wall -Wextra -Werror -pthread
 
-SRCS = ./src/philosophers.c  ./src/mini_lib.c ./src/parrsing.c ./src/ft_itoa_nosigne.c 
+SRCS = ./src/philosophers.c  ./src/mini_lib.c ./src/parrsing.c ./src/free_err.c ./src/ft_itoa_nosigne.c 
 BONUS_SRCS = bonus/philosophers_bonus.c
 OBJS = $(SRCS:.c=.o)
 BONUS_OBJS = $(BONUS_SRCS:.c=.o)
 
 
-robbyrussell
+
 HEADERS = ./include
 
 # COLOR #

@@ -6,7 +6,7 @@
 /*   By: kasingh <kasingh@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/21 18:27:37 by kasingh           #+#    #+#             */
-/*   Updated: 2024/03/22 16:05:52 by kasingh          ###   ########.fr       */
+/*   Updated: 2024/03/27 16:11:03 by kasingh          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,22 +22,15 @@ int	ft_strlen(char *s)
 	return (i);
 }
 
-void	ft_error(char *s)
-{
-	ft_putstr_fd("Error : ", 2);
-	ft_putstr_fd(s, 2);
-	exit(1);
-}
-
 void	ft_putstr_fd(char *s, int fd)
 {
 	write(fd, s, ft_strlen(s));
 }
 
-int	ft_atoi(char *s)
+int	ft_atol(char *s)
 {
-	int	i;
-	int	res;
+	long int	i;
+	long int	res;
 
 	i = 0;
 	res = 0;
