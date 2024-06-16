@@ -6,7 +6,7 @@
 /*   By: kasingh <kasingh@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/21 18:30:48 by kasingh           #+#    #+#             */
-/*   Updated: 2024/06/15 15:32:29 by kasingh          ###   ########.fr       */
+/*   Updated: 2024/06/16 15:34:48 by kasingh          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ int	is_good_int(char *str)
 	i = 0;
 	if (str[i] == '-')
 		free_err_exit(E "%s : %e" E_neg, str, 1);
-	int_limit = ft_itoa_nosigne(LONG_MAX);
+	int_limit = ft_itoa_nosigne(INT_MAX);
 	if (!int_limit)
 		return (0);
 	if (str[i] == '+')
@@ -57,18 +57,6 @@ int	is_good_syntax(char *str)
 	return (1);
 }
 
-int	is_good_time_int(char *str)
-{
-	int	i;
-
-	i = 0;
-	while (str[i] && str[i] == '0')
-		i++;
-	if (ft_strlen(&str[i]) + 3 > 10)
-		return (-1);
-	return (0);
-}
-
 int	ft_is_good_args(char **av)
 {
 	int	i;
@@ -80,8 +68,6 @@ int	ft_is_good_args(char **av)
 			free_err_exit(E "%s : %e" E_syntax, av[i], 1);
 		if (!is_good_int(av[i]))
 			free_err_exit(E "%s : %e" E_int, av[i], 1);
-		if (i != 1 && is_good_time_int(av[i]) == -1)
-			free_err_exit(E "%s : %e" E_time, av[i], 1);
 		i++;
 	}
 	return (0);
@@ -95,7 +81,6 @@ int	ft_parse_args(int ac, char **av, t_args *args)
 	args->time_to_die = ft_atoi(av[2]);
 	args->time_to_eat = ft_atoi(av[3]);
 	args->time_to_sleep = ft_atoi(av[4]);
-	printf("args->time_to_sleep = %d\n", args->time_to_sleep);
 	if (ac == 6)
 		args->num_eat = ft_atoi(av[5]);
 	else
