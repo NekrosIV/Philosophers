@@ -6,7 +6,7 @@
 /*   By: kasingh <kasingh@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/21 18:30:48 by kasingh           #+#    #+#             */
-/*   Updated: 2024/06/16 15:34:48 by kasingh          ###   ########.fr       */
+/*   Updated: 2024/06/19 17:38:07 by kasingh          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,8 +20,6 @@ int	is_good_int(char *str)
 	int		i;
 
 	i = 0;
-	if (str[i] == '-')
-		free_err_exit(E "%s : %e" E_neg, str, 1);
 	int_limit = ft_itoa_nosigne(INT_MAX);
 	if (!int_limit)
 		return (0);
@@ -65,9 +63,20 @@ int	ft_is_good_args(char **av)
 	while (av[i])
 	{
 		if (!is_good_syntax(av[i]))
-			free_err_exit(E "%s : %e" E_syntax, av[i], 1);
+		{
+			ft_error(E, av[i], E_SYNTAX);
+			return (-1);
+		}
+		if (av[i][0] == '-')
+		{
+			ft_error(E, av[i], E_NEG);
+			return (-1);
+		}
 		if (!is_good_int(av[i]))
-			free_err_exit(E "%s : %e" E_int, av[i], 1);
+		{
+			ft_error(E, av[i], E_INT);
+			return (-1);
+		}
 		i++;
 	}
 	return (0);
@@ -75,7 +84,7 @@ int	ft_is_good_args(char **av)
 
 int	ft_parse_args(int ac, char **av, t_args *args)
 {
-	if (ac < 5 || ac > 6 || ft_is_good_args(av) == -1)
+	if (ft_is_good_args(av) == -1)
 		return (-1);
 	args->num_philo = ft_atoi(av[1]);
 	args->time_to_die = ft_atoi(av[2]);
@@ -87,8 +96,12 @@ int	ft_parse_args(int ac, char **av, t_args *args)
 		args->num_eat = -1;
 	pthread_mutex_init(&args->print_mutex, NULL);
 	args->start = current_time_ms();
+	args->stop_simulation = 0;
 	if (args->num_philo <= 0 || args->time_to_die <= 0 || args->time_to_eat <= 0
 		|| args->time_to_sleep <= 0 || args->num_eat < -1)
-		free_err_exit(E E_Iarg "%e", 1);
+	{
+		ft_error(E, NULL, E_IARG);
+		return (-1);
+	}
 	return (0);
 }
