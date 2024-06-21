@@ -6,7 +6,7 @@
 /*   By: kasingh <kasingh@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/18 10:32:08 by kasingh           #+#    #+#             */
-/*   Updated: 2024/06/21 16:51:02 by kasingh          ###   ########.fr       */
+/*   Updated: 2024/06/21 17:47:31 by kasingh          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,7 +105,7 @@ void	*philo_routine(void *arg)
 	{
 		while (1)
 		{
-			usleep(100);
+			usleep(50);
 			pthread_mutex_lock(&philo->args->start_mutex);
 			if (philo->args->start_count >= philo->args->num_philo)
 			{
@@ -124,13 +124,13 @@ void	*philo_routine(void *arg)
 			break ;
 		pthread_mutex_lock(&philo->left_fork);
 		print_state(philo, "has taken a fork");
-		// if (philo->right_fork == NULL)
-		// {
-		// 	while (philo->args->stop_simulation)
-		// 		usleep(100);
-		// 	pthread_mutex_unlock(&philo->left_fork);
-		// 	return (NULL);
-		// }
+		if (philo->right_fork == NULL)
+		{
+			while (philo->args->stop_simulation)
+				usleep(100);
+			pthread_mutex_unlock(&philo->left_fork);
+			return (NULL);
+		}
 		pthread_mutex_lock(philo->right_fork);
 		if (philo->args->stop_simulation)
 		{
@@ -189,19 +189,21 @@ void	*monitor_routine(void *arg)
 				pthread_mutex_unlock(&philos[i].eat_mutex);
 				return (NULL);
 			}
-			else
+			else if (philos[i].stop == true)
+			{
 				stop++;
+				if (stop == args->num_philo && args->num_philo != 1)
+					return (pthread_mutex_unlock(&philos[i].eat_mutex), NULL);
+			}
 			pthread_mutex_unlock(&philos[i].eat_mutex);
 			i++;
 		}
-		if (stop == args->num_philo && args->num_philo != 1 )
-			break ;
 		usleep(200);
 	}
 	return (NULL);
 }
 
-int	ft_creat_thread(t_philo *philo)
+int	ft_creat_thread(t_philo *philo, pthread_t *monitor_thread)
 {
 	int	i;
 	int	j;
@@ -218,6 +220,11 @@ int	ft_creat_thread(t_philo *philo)
 			return (-1);
 		}
 		i++;
+	}
+	if (pthread_create(monitor_thread, NULL, monitor_routine, philo) != 0)
+	{
+		free(philo);
+		return (ft_error(E, NULL, E_THREAD_C), -1);
 	}
 	return (0);
 }
@@ -275,14 +282,8 @@ int	main(int ac, char **av)
 		return (1);
 	if (init_philo(&args, &philo) == -1)
 		return (ft_error(E, NULL, E_INIT_STRUCT), 1);
-	if (ft_creat_thread(philo) != 0)
+	if (ft_creat_thread(philo, &monitor_thread) != 0)
 		return (destroy_mutexes(philo), 1);
-	if (pthread_create(&monitor_thread, NULL, monitor_routine, philo) != 0)
-	{
-		destroy_mutexes(philo);
-		free(philo);
-		return (ft_error(E, NULL, E_THREAD_C), 1);
-	}
 	if (ft_join_thread(philo, monitor_thread) != 0)
 		return (destroy_mutexes(philo), 1);
 	destroy_mutexes(philo);
