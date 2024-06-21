@@ -6,7 +6,7 @@
 /*   By: kasingh <kasingh@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/18 10:33:02 by kasingh           #+#    #+#             */
-/*   Updated: 2024/06/21 14:14:09 by kasingh          ###   ########.fr       */
+/*   Updated: 2024/06/21 15:49:25 by kasingh          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,6 +66,7 @@ typedef struct s_philo
 	int				id;
 	int				num_eat;
 	long int		last_eat;
+	bool			stop;
 	pthread_t		thread;
 	pthread_mutex_t	eat_mutex;
 	pthread_mutex_t	left_fork;

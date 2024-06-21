@@ -6,7 +6,7 @@
 /*   By: kasingh <kasingh@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/18 10:32:08 by kasingh           #+#    #+#             */
-/*   Updated: 2024/06/21 14:24:34 by kasingh          ###   ########.fr       */
+/*   Updated: 2024/06/21 16:01:01 by kasingh          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,7 @@ int	init_philo(t_args *args, t_philo **philo)
 		(*philo)[i].num_eat = 0;
 		(*philo)[i].last_eat = args->start;
 		(*philo)[i].args = args;
+		(*philo)[i].stop = false;
 		pthread_mutex_init(&((*philo)[i].eat_mutex), NULL);
 		pthread_mutex_init(&((*philo)[i].left_fork), NULL);
 		if (i == args->num_philo - 1)
@@ -115,9 +116,12 @@ void	*philo_routine(void *arg)
 	pthread_mutex_lock(&philo->eat_mutex);
 	philo->last_eat = current_time_ms();
 	pthread_mutex_unlock(&philo->eat_mutex);
-	while (1)
+	while (philo->args->stop_simulation != 1)
 	{
+		if (philo->args->stop_simulation)
+			break ;
 		pthread_mutex_lock(&philo->left_fork);
+		print_state(philo, "has taken a fork");
 		pthread_mutex_lock(philo->right_fork);
 		if (philo->args->stop_simulation)
 		{
@@ -129,13 +133,20 @@ void	*philo_routine(void *arg)
 		pthread_mutex_lock(&philo->eat_mutex);
 		philo->last_eat = current_time_ms();
 		philo->num_eat++;
+		if (philo->num_eat == philo->args->num_eat)
+			philo->stop = true;
 		pthread_mutex_unlock(&philo->eat_mutex);
 		print_state(philo, "is eating");
 		philo_wait(philo->args->time_to_eat);
 		pthread_mutex_unlock(philo->right_fork);
 		pthread_mutex_unlock(&philo->left_fork);
-		if (philo->args->stop_simulation)
+		pthread_mutex_lock(&philo->eat_mutex);
+		if (philo->args->stop_simulation || philo->stop == true)
+		{
+			pthread_mutex_unlock(&philo->eat_mutex);
 			break ;
+		}
+		pthread_mutex_unlock(&philo->eat_mutex);
 		print_state(philo, "is sleeping");
 		philo_wait(philo->args->time_to_sleep);
 		if (philo->args->stop_simulation)
@@ -150,25 +161,32 @@ void	*monitor_routine(void *arg)
 	t_philo	*philos;
 	t_args	*args;
 	int		i;
+	int		stop;
 
 	philos = (t_philo *)arg;
 	args = philos[0].args;
 	while (1)
 	{
 		i = 0;
+		stop = 0;
 		while (i < args->num_philo)
 		{
 			pthread_mutex_lock(&philos[i].eat_mutex);
-			if (current_time_ms() - philos[i].last_eat > args->time_to_die)
+			if (philos[i].stop == false && current_time_ms()
+				- philos[i].last_eat > args->time_to_die)
 			{
 				print_state(&philos[i], "died");
 				args->stop_simulation = 1;
 				pthread_mutex_unlock(&philos[i].eat_mutex);
 				return (NULL);
 			}
+			else
+				stop++;
 			pthread_mutex_unlock(&philos[i].eat_mutex);
 			i++;
 		}
+		if (stop == args->num_philo)
+			break ;
 		usleep(200);
 	}
 	return (NULL);
