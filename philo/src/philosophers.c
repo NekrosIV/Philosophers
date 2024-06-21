@@ -6,7 +6,7 @@
 /*   By: kasingh <kasingh@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/18 10:32:08 by kasingh           #+#    #+#             */
-/*   Updated: 2024/06/21 16:01:01 by kasingh          ###   ########.fr       */
+/*   Updated: 2024/06/21 16:51:02 by kasingh          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,9 @@ int	init_philo(t_args *args, t_philo **philo)
 		(*philo)[i].stop = false;
 		pthread_mutex_init(&((*philo)[i].eat_mutex), NULL);
 		pthread_mutex_init(&((*philo)[i].left_fork), NULL);
-		if (i == args->num_philo - 1)
+		if (args->num_philo == 1)
+			(*philo)[i].right_fork = NULL;
+		else if (i == args->num_philo - 1)
 			(*philo)[i].right_fork = &((*philo)[0].left_fork);
 		else
 			(*philo)[i].right_fork = &((*philo)[i + 1].left_fork);
@@ -103,6 +105,7 @@ void	*philo_routine(void *arg)
 	{
 		while (1)
 		{
+			usleep(100);
 			pthread_mutex_lock(&philo->args->start_mutex);
 			if (philo->args->start_count >= philo->args->num_philo)
 			{
@@ -110,7 +113,6 @@ void	*philo_routine(void *arg)
 				break ;
 			}
 			pthread_mutex_unlock(&philo->args->start_mutex);
-			usleep(100);
 		}
 	}
 	pthread_mutex_lock(&philo->eat_mutex);
@@ -122,6 +124,13 @@ void	*philo_routine(void *arg)
 			break ;
 		pthread_mutex_lock(&philo->left_fork);
 		print_state(philo, "has taken a fork");
+		// if (philo->right_fork == NULL)
+		// {
+		// 	while (philo->args->stop_simulation)
+		// 		usleep(100);
+		// 	pthread_mutex_unlock(&philo->left_fork);
+		// 	return (NULL);
+		// }
 		pthread_mutex_lock(philo->right_fork);
 		if (philo->args->stop_simulation)
 		{
@@ -185,7 +194,7 @@ void	*monitor_routine(void *arg)
 			pthread_mutex_unlock(&philos[i].eat_mutex);
 			i++;
 		}
-		if (stop == args->num_philo)
+		if (stop == args->num_philo && args->num_philo != 1 )
 			break ;
 		usleep(200);
 	}
