@@ -6,7 +6,7 @@
 /*   By: kasingh <kasingh@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/18 10:33:02 by kasingh           #+#    #+#             */
-/*   Updated: 2024/06/19 17:37:40 by kasingh          ###   ########.fr       */
+/*   Updated: 2024/06/21 14:14:09 by kasingh          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,6 +55,8 @@ typedef struct s_args
 	int				time_to_sleep;
 	int				num_eat;
 	int				stop_simulation;
+	int				start_count;
+	pthread_mutex_t	start_mutex;
 	pthread_mutex_t	print_mutex;
 	long int		start;
 }					t_args;

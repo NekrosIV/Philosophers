@@ -6,7 +6,7 @@
 /*   By: kasingh <kasingh@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/18 10:32:08 by kasingh           #+#    #+#             */
-/*   Updated: 2024/06/19 17:55:05 by kasingh          ###   ########.fr       */
+/*   Updated: 2024/06/21 14:24:34 by kasingh          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,15 +95,36 @@ void	*philo_routine(void *arg)
 	t_philo	*philo;
 
 	philo = (t_philo *)arg;
+	pthread_mutex_lock(&philo->args->start_mutex);
+	philo->args->start_count++;
+	pthread_mutex_unlock(&philo->args->start_mutex);
+	if (philo->id % 2 == 0)
+	{
+		while (1)
+		{
+			pthread_mutex_lock(&philo->args->start_mutex);
+			if (philo->args->start_count >= philo->args->num_philo)
+			{
+				pthread_mutex_unlock(&philo->args->start_mutex);
+				break ;
+			}
+			pthread_mutex_unlock(&philo->args->start_mutex);
+			usleep(100);
+		}
+	}
 	pthread_mutex_lock(&philo->eat_mutex);
 	philo->last_eat = current_time_ms();
 	pthread_mutex_unlock(&philo->eat_mutex);
 	while (1)
 	{
-		if (philo->args->stop_simulation)
-			break ;
 		pthread_mutex_lock(&philo->left_fork);
 		pthread_mutex_lock(philo->right_fork);
+		if (philo->args->stop_simulation)
+		{
+			pthread_mutex_unlock(philo->right_fork);
+			pthread_mutex_unlock(&philo->left_fork);
+			break ;
+		}
 		print_state(philo, "has taken a fork");
 		pthread_mutex_lock(&philo->eat_mutex);
 		philo->last_eat = current_time_ms();
@@ -111,10 +132,10 @@ void	*philo_routine(void *arg)
 		pthread_mutex_unlock(&philo->eat_mutex);
 		print_state(philo, "is eating");
 		philo_wait(philo->args->time_to_eat);
-		if (philo->args->stop_simulation)
-			break ;
 		pthread_mutex_unlock(philo->right_fork);
 		pthread_mutex_unlock(&philo->left_fork);
+		if (philo->args->stop_simulation)
+			break ;
 		print_state(philo, "is sleeping");
 		philo_wait(philo->args->time_to_sleep);
 		if (philo->args->stop_simulation)
@@ -140,12 +161,10 @@ void	*monitor_routine(void *arg)
 			pthread_mutex_lock(&philos[i].eat_mutex);
 			if (current_time_ms() - philos[i].last_eat > args->time_to_die)
 			{
-				pthread_mutex_lock(&args->print_mutex);
-				printf("%ld %d died\n", current_time_ms(), philos[i].id);
-				pthread_mutex_unlock(&args->print_mutex);
+				print_state(&philos[i], "died");
 				args->stop_simulation = 1;
 				pthread_mutex_unlock(&philos[i].eat_mutex);
-				break ;
+				return (NULL);
 			}
 			pthread_mutex_unlock(&philos[i].eat_mutex);
 			i++;
@@ -181,13 +200,12 @@ int	ft_join_thread(t_philo *philo, pthread_t monitor_thread)
 	int	i;
 
 	i = 0;
-	// if (pthread_join(monitor_thread, NULL) != 0)
-	// {
-	// 	free(philo);
-	// 	ft_error(E, NULL, E_THREAD_J);
-	// 	return (-1);
-	// }
-	(void)monitor_thread;
+	if (pthread_join(monitor_thread, NULL) != 0)
+	{
+		free(philo);
+		ft_error(E, NULL, E_THREAD_J);
+		return (-1);
+	}
 	while (i < philo->args->num_philo)
 	{
 		if (pthread_join(philo[i].thread, NULL) != 0)
@@ -207,6 +225,7 @@ void	destroy_mutexes(t_philo *philo)
 
 	i = 0;
 	pthread_mutex_destroy(&philo->args->print_mutex);
+	pthread_mutex_destroy(&philo->args->start_mutex);
 	while (i < philo->args->num_philo)
 	{
 		pthread_mutex_destroy(&philo[i].left_fork);
@@ -239,8 +258,6 @@ int	main(int ac, char **av)
 	}
 	if (ft_join_thread(philo, monitor_thread) != 0)
 		return (destroy_mutexes(philo), 1);
-	args.stop_simulation = 1;
-	pthread_join(monitor_thread, NULL); // Ensure monitor thread is joined
 	destroy_mutexes(philo);
 	return (free(philo), 0);
 }

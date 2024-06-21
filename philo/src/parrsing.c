@@ -6,7 +6,7 @@
 /*   By: kasingh <kasingh@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/21 18:30:48 by kasingh           #+#    #+#             */
-/*   Updated: 2024/06/19 17:38:07 by kasingh          ###   ########.fr       */
+/*   Updated: 2024/06/21 14:14:56 by kasingh          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,6 +94,8 @@ int	ft_parse_args(int ac, char **av, t_args *args)
 		args->num_eat = ft_atoi(av[5]);
 	else
 		args->num_eat = -1;
+	args->start_count = 0;
+	pthread_mutex_init(&args->start_mutex, NULL);
 	pthread_mutex_init(&args->print_mutex, NULL);
 	args->start = current_time_ms();
 	args->stop_simulation = 0;
