@@ -6,7 +6,7 @@
 /*   By: kasingh <kasingh@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/18 10:33:02 by kasingh           #+#    #+#             */
-/*   Updated: 2024/06/21 15:49:25 by kasingh          ###   ########.fr       */
+/*   Updated: 2024/06/22 16:42:57 by kasingh          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,6 +57,7 @@ typedef struct s_args
 	int				stop_simulation;
 	int				start_count;
 	pthread_mutex_t	start_mutex;
+	pthread_mutex_t	stop_mutex;
 	pthread_mutex_t	print_mutex;
 	long int		start;
 }					t_args;
@@ -74,26 +75,48 @@ typedef struct s_philo
 	t_args			*args;
 }					t_philo;
 
-/************************* PHILOSOPHERS.C *************************/
-
-long				current_time_ms(void);
-
-/************************* PARRSSING.C *************************/
+/*********************** PARRSSING.C ***********************/
 int					ft_is_good_args(char **av);
 int					ft_parse_args(int ac, char **av, t_args *args);
 
-/************************* MINI_LIB.C *************************/
+/*********************** MINI_LIB.C ************************/
 int					ft_strlen(char *s);
 void				ft_putchar_fd(char c, int fd);
 void				ft_putstr_fd(char *s, int fd);
 int					ft_atoi(char *s);
 int					ft_strncmp(const char *s1, const char *s2, size_t n);
 
-/************************* FREE_ERR.C *************************/
-
+/*********************** FREE_ERR.C ************************/
 void				ft_error(char *s1, char *fautif, char *err);
 
-/************************* ITOA_NOSIGNE.C *************************/
+/********************** ITOA_NOSIGNE.C *********************/
 char				*ft_itoa_nosigne(long int n);
+
+/************************* UTILS.C *************************/
+int					check_stop_simulation(t_philo *philo);
+void				print_state(t_philo *philo, char *msg);
+void				unlock_forks(pthread_mutex_t *first_fork,
+						pthread_mutex_t *second_fork);
+void				initialize_philo(t_philo *philo);
+
+/************************* TIME.C **************************/
+long				current_time_ms(void);
+void				philo_wait(long time_ms);
+int					wait_to_die(t_philo *philo, pthread_mutex_t *first_fork);
+
+/*********************** ROUTINE.C *************************/
+int					lock_forks(pthread_mutex_t *first_fork,
+						pthread_mutex_t *second_fork, t_philo *philo);
+void				eat(t_philo *philo);
+int					sleep_and_think(t_philo *philo);
+void				loop_routine(t_philo *philo, pthread_mutex_t *first_fork,
+						pthread_mutex_t *second_fork);
+void				*philo_routine(void *arg);
+
+/*********************** MONITOR.C *************************/
+
+int					loop_monitor_routine(t_philo *philos, t_args *args,
+						int stop, int i);
+void				*monitor_routine(void *arg);
 
 #endif

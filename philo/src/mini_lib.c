@@ -6,7 +6,7 @@
 /*   By: kasingh <kasingh@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/21 18:27:37 by kasingh           #+#    #+#             */
-/*   Updated: 2024/06/15 15:29:18 by kasingh          ###   ########.fr       */
+/*   Updated: 2024/06/22 16:34:09 by kasingh          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@ int	ft_strlen(char *s)
 		i++;
 	return (i);
 }
+
 void	ft_putchar_fd(char c, int fd)
 {
 	write(fd, &c, 1);
