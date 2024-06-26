@@ -6,7 +6,7 @@
 /*   By: kasingh <kasingh@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/22 15:48:30 by kasingh           #+#    #+#             */
-/*   Updated: 2024/06/22 16:32:46 by kasingh          ###   ########.fr       */
+/*   Updated: 2024/06/26 12:00:53 by kasingh          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ int	lock_forks(pthread_mutex_t *first_fork, pthread_mutex_t *second_fork,
 		return (1);
 	}
 	pthread_mutex_unlock(&philo->args->stop_mutex);
-	print_state(philo, "has taken a left fork");
+	print_state(philo, "has taken a left fork", C_M);
 	if (second_fork == NULL)
 		return (wait_to_die(philo, first_fork));
 	pthread_mutex_lock(second_fork);
@@ -36,7 +36,7 @@ int	lock_forks(pthread_mutex_t *first_fork, pthread_mutex_t *second_fork,
 		return (1);
 	}
 	pthread_mutex_unlock(&philo->args->stop_mutex);
-	print_state(philo, "has taken a right fork");
+	print_state(philo, "has taken a right fork", C_M);
 	return (0);
 }
 
@@ -48,13 +48,13 @@ void	eat(t_philo *philo)
 	if (philo->num_eat == philo->args->num_eat)
 		philo->stop = true;
 	pthread_mutex_unlock(&philo->eat_mutex);
-	print_state(philo, "is eating");
+	print_state(philo, "is eating", C_Y);
 	philo_wait(philo->args->time_to_eat);
 }
 
 int	sleep_and_think(t_philo *philo)
 {
-	print_state(philo, "is sleeping");
+	print_state(philo, "is sleeping", C_C);
 	philo_wait(philo->args->time_to_sleep);
 	pthread_mutex_lock(&philo->args->stop_mutex);
 	if (philo->args->stop_simulation)
@@ -63,7 +63,7 @@ int	sleep_and_think(t_philo *philo)
 		return (1);
 	}
 	pthread_mutex_unlock(&philo->args->stop_mutex);
-	print_state(philo, "is thinking");
+	print_state(philo, "is thinking", C_G);
 	return (0);
 }
 

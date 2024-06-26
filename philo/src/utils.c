@@ -6,7 +6,7 @@
 /*   By: kasingh <kasingh@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/22 15:47:09 by kasingh           #+#    #+#             */
-/*   Updated: 2024/06/22 15:51:30 by kasingh          ###   ########.fr       */
+/*   Updated: 2024/06/26 11:49:26 by kasingh          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,13 +22,13 @@ int	check_stop_simulation(t_philo *philo)
 	return (stop);
 }
 
-void	print_state(t_philo *philo, char *msg)
+void	print_state(t_philo *philo, char *msg, char *color)
 {
 	long	current_time;
 
 	current_time = current_time_ms() - philo->args->start;
 	pthread_mutex_lock(&philo->args->print_mutex);
-	printf("%ld %d %s\n", current_time, philo->id, msg);
+	printf("%s%ld %d %s\n" C_0, color, current_time, philo->id, msg);
 	pthread_mutex_unlock(&philo->args->print_mutex);
 }
 

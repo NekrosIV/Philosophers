@@ -6,7 +6,7 @@
 /*   By: kasingh <kasingh@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/22 16:00:02 by kasingh           #+#    #+#             */
-/*   Updated: 2024/06/22 16:00:36 by kasingh          ###   ########.fr       */
+/*   Updated: 2024/06/25 13:47:10 by kasingh          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ int	loop_monitor_routine(t_philo *philos, t_args *args, int stop, int i)
 		if (philos[i].stop == false && current_time_ms()
 			- philos[i].last_eat > args->time_to_die)
 		{
-			print_state(&philos[i], "died");
+			print_state(&philos[i], "died", C_R);
 			pthread_mutex_lock(&args->stop_mutex);
 			args->stop_simulation = 1;
 			pthread_mutex_unlock(&args->stop_mutex);
