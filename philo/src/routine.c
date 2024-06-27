@@ -6,7 +6,7 @@
 /*   By: kasingh <kasingh@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/22 15:48:30 by kasingh           #+#    #+#             */
-/*   Updated: 2024/06/26 12:00:53 by kasingh          ###   ########.fr       */
+/*   Updated: 2024/06/27 16:45:45 by kasingh          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,6 +76,11 @@ void	loop_routine(t_philo *philo, pthread_mutex_t *first_fork,
 			break ;
 		if (lock_forks(first_fork, second_fork, philo))
 			break ;
+		if (check_stop_simulation(philo))
+		{
+			unlock_forks(first_fork, second_fork);
+			break ;
+		}
 		eat(philo);
 		unlock_forks(first_fork, second_fork);
 		pthread_mutex_lock(&philo->eat_mutex);
