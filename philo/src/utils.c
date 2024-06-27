@@ -6,7 +6,7 @@
 /*   By: kasingh <kasingh@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/22 15:47:09 by kasingh           #+#    #+#             */
-/*   Updated: 2024/06/26 11:49:26 by kasingh          ###   ########.fr       */
+/*   Updated: 2024/06/27 17:59:39 by kasingh          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,8 @@ void	print_state(t_philo *philo, char *msg, char *color)
 {
 	long	current_time;
 
+	if (ft_strncmp(msg, "died", 4) == 0)
+		usleep(500);
 	current_time = current_time_ms() - philo->args->start;
 	pthread_mutex_lock(&philo->args->print_mutex);
 	printf("%s%ld %d %s\n" C_0, color, current_time, philo->id, msg);
