@@ -6,7 +6,7 @@
 /*   By: kasingh <kasingh@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/21 18:30:48 by kasingh           #+#    #+#             */
-/*   Updated: 2024/06/22 12:32:13 by kasingh          ###   ########.fr       */
+/*   Updated: 2024/06/28 14:52:03 by kasingh          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,7 +98,7 @@ int	ft_parse_args(int ac, char **av, t_args *args)
 	pthread_mutex_init(&args->start_mutex, NULL);
 	pthread_mutex_init(&args->stop_mutex, NULL);
 	pthread_mutex_init(&args->print_mutex, NULL);
-	args->start = current_time_ms();
+	args->start = 0;
 	args->stop_simulation = 0;
 	if (args->num_philo <= 0 || args->time_to_die <= 0 || args->time_to_eat <= 0
 		|| args->time_to_sleep <= 0 || args->num_eat < -1)

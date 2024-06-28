@@ -6,7 +6,7 @@
 /*   By: kasingh <kasingh@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/22 16:00:02 by kasingh           #+#    #+#             */
-/*   Updated: 2024/06/27 16:35:29 by kasingh          ###   ########.fr       */
+/*   Updated: 2024/06/28 15:53:38 by kasingh          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,8 @@ void	*monitor_routine(void *arg)
 
 	philos = (t_philo *)arg;
 	args = philos[0].args;
+	wait_all_philo(philos);
+	usleep(1000);
 	while (1)
 	{
 		i = 0;

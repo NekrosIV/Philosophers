@@ -6,7 +6,7 @@
 /*   By: kasingh <kasingh@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/22 15:47:09 by kasingh           #+#    #+#             */
-/*   Updated: 2024/06/27 17:59:39 by kasingh          ###   ########.fr       */
+/*   Updated: 2024/06/28 16:09:17 by kasingh          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,26 +40,29 @@ void	unlock_forks(pthread_mutex_t *first_fork, pthread_mutex_t *second_fork)
 	pthread_mutex_unlock(first_fork);
 }
 
+void	wait_all_philo(t_philo *philo)
+{
+	while (1)
+	{
+		pthread_mutex_lock(&philo->args->start_mutex);
+		if (philo->args->start_count >= philo->args->num_philo)
+		{
+			pthread_mutex_unlock(&philo->args->start_mutex);
+			break ;
+		}
+		pthread_mutex_unlock(&philo->args->start_mutex);
+		usleep(100);
+	}
+}
 void	initialize_philo(t_philo *philo)
 {
 	pthread_mutex_lock(&philo->args->start_mutex);
 	philo->args->start_count++;
 	pthread_mutex_unlock(&philo->args->start_mutex);
-	if (philo->id % 2 != 0)
-	{
-		while (1)
-		{
-			usleep(1000);
-			pthread_mutex_lock(&philo->args->start_mutex);
-			if (philo->args->start_count >= philo->args->num_philo)
-			{
-				pthread_mutex_unlock(&philo->args->start_mutex);
-				break ;
-			}
-			pthread_mutex_unlock(&philo->args->start_mutex);
-		}
-	}
 	pthread_mutex_lock(&philo->eat_mutex);
 	philo->last_eat = current_time_ms();
 	pthread_mutex_unlock(&philo->eat_mutex);
+	wait_all_philo(philo);
+	if (philo->id % 2 != 0)
+		usleep(800);
 }

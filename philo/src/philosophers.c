@@ -6,7 +6,7 @@
 /*   By: kasingh <kasingh@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/18 10:32:08 by kasingh           #+#    #+#             */
-/*   Updated: 2024/06/26 11:53:41 by kasingh          ###   ########.fr       */
+/*   Updated: 2024/06/28 15:37:58 by kasingh          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,7 @@ int	ft_creat_thread(t_philo *philo, pthread_t *monitor_thread)
 
 	i = 0;
 	j = 0;
+	philo->args->start = current_time_ms();
 	while (i < philo->args->num_philo)
 	{
 		if (pthread_create(&philo[i].thread, NULL, philo_routine,

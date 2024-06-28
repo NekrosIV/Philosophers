@@ -6,7 +6,7 @@
 /*   By: kasingh <kasingh@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/18 10:33:02 by kasingh           #+#    #+#             */
-/*   Updated: 2024/06/26 11:59:44 by kasingh          ###   ########.fr       */
+/*   Updated: 2024/06/28 14:59:26 by kasingh          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,6 +97,7 @@ int					check_stop_simulation(t_philo *philo);
 void				print_state(t_philo *philo, char *msg, char *color);
 void				unlock_forks(pthread_mutex_t *first_fork,
 						pthread_mutex_t *second_fork);
+void				wait_all_philo(t_philo *philo);
 void				initialize_philo(t_philo *philo);
 
 /************************* TIME.C **************************/

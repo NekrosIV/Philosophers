@@ -6,7 +6,7 @@
 /*   By: kasingh <kasingh@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/22 15:48:30 by kasingh           #+#    #+#             */
-/*   Updated: 2024/06/27 16:45:45 by kasingh          ###   ########.fr       */
+/*   Updated: 2024/06/28 16:12:53 by kasingh          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,7 +102,6 @@ void	*philo_routine(void *arg)
 	pthread_mutex_t	*second_fork;
 
 	philo = (t_philo *)arg;
-	initialize_philo(philo);
 	if (philo->args->num_philo == 1 || &philo->left_fork < philo->right_fork)
 	{
 		first_fork = &philo->left_fork;
@@ -113,6 +112,7 @@ void	*philo_routine(void *arg)
 		first_fork = philo->right_fork;
 		second_fork = &philo->left_fork;
 	}
+	initialize_philo(philo);
 	loop_routine(philo, first_fork, second_fork);
 	return (NULL);
 }
