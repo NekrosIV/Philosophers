@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   parrsing.c                                         :+:      :+:    :+:   */
+/*   bonus_parrsing.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: kasingh <kasingh@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/21 18:30:48 by kasingh           #+#    #+#             */
-/*   Updated: 2024/06/26 17:25:11 by kasingh          ###   ########.fr       */
+/*   Updated: 2024/06/29 16:07:04 by kasingh          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,6 +82,15 @@ int	ft_is_good_args(char **av)
 	return (0);
 }
 
+int	init_semaphore(t_args *args)
+{
+	sem_unlink("/forks");
+	args->forks = sem_open("/forks", O_CREAT | O_EXCL, 0644, args->num_philo);
+	if (args->forks == SEM_FAILED)
+		return (-1);
+	return (0);
+}
+
 int	ft_parse_args(int ac, char **av, t_args *args)
 {
 	if (ft_is_good_args(av) == -1)
@@ -98,9 +107,8 @@ int	ft_parse_args(int ac, char **av, t_args *args)
 	args->stop_simulation = 0;
 	if (args->num_philo <= 0 || args->time_to_die <= 0 || args->time_to_eat <= 0
 		|| args->time_to_sleep <= 0 || args->num_eat < -1)
-	{
-		ft_error(E, NULL, E_IARG);
-		return (-1);
-	}
+		return (ft_error(E, NULL, E_IARG), -1);
+	if (init_semaphore(args) == -1)
+		return (ft_error(E, NULL, E_SEM), -1);
 	return (0);
 }

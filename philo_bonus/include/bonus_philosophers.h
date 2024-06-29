@@ -6,20 +6,23 @@
 /*   By: kasingh <kasingh@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/18 10:33:02 by kasingh           #+#    #+#             */
-/*   Updated: 2024/06/27 13:17:41 by kasingh          ###   ########.fr       */
+/*   Updated: 2024/06/29 16:06:44 by kasingh          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef BONUS_PHILOSOPHERS_H
 # define BONUS_PHILOSOPHERS_H
 
+# include <fcntl.h>
 # include <limits.h>
 # include <pthread.h>
+# include <semaphore.h>
 # include <stdarg.h>
 # include <stdbool.h>
 # include <stdio.h>
 # include <stdlib.h>
 # include <sys/time.h>
+# include <sys/wait.h>
 # include <unistd.h>
 
 /************************* COLOR *************************/
@@ -45,6 +48,8 @@
 # define E_THREAD_C "Thread creation failed\n"
 # define E_THREAD_J "Thread join failed\n"
 # define E_MUTEX "Mutex failed\n"
+# define E_FORK "Failed to fork\n"
+# define E_SEM "Failed to init semaphore\n"
 
 /************************* STRUCTS *************************/
 typedef struct s_args
@@ -56,6 +61,7 @@ typedef struct s_args
 	int			num_eat;
 	int			stop_simulation;
 	long int	start;
+	sem_t		*forks;
 }				t_args;
 
 typedef struct s_philo
