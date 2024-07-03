@@ -6,7 +6,7 @@
 /*   By: kasingh <kasingh@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/26 17:27:55 by kasingh           #+#    #+#             */
-/*   Updated: 2024/07/02 16:55:19 by kasingh          ###   ########.fr       */
+/*   Updated: 2024/07/03 19:16:01 by kasingh          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,17 +43,31 @@ int	init_philo(t_args *args, t_philo **philo)
 	}
 	return (0);
 }
+void	is_dead(t_philo *philo)
+{
+	sem_wait(philo->args->is_dead);
+	if (philo->args->stop_simulation == 1)
+		sem_post(philo->args->stop_simu);
+	sem_post(philo->args->is_dead);
+}
 
 void	print_state(t_philo *philo, char *msg, char *color)
 {
 	long	current_time;
 
-	if (ft_strncmp(msg, "died", 4) == 0)
-		usleep(500);
 	current_time = current_time_ms() - philo->args->start;
-	sem_wait(philo->args->print);
-	printf("%s%ld %d %s\n" C_0, color, current_time, philo->id, msg);
-	sem_post(philo->args->print);
+	if (ft_strncmp(msg, "died", 4) == 0)
+	{
+		sem_wait(philo->args->print);
+		printf("%s%ld %d %s%s\n", color, current_time, philo->id, msg, C_0);
+		is_dead(philo);
+	}
+	else
+	{
+		sem_wait(philo->args->print);
+		printf("%s%ld %d %s%s\n", color, current_time, philo->id, msg, C_0);
+		sem_post(philo->args->print);
+	}
 }
 void	close_semaphores(t_args *args)
 {
@@ -62,31 +76,66 @@ void	close_semaphores(t_args *args)
 	sem_close(args->stop_simu);
 	sem_unlink("/stop_simu");
 	sem_close(args->print);
-	sem_unlink("print");
+	sem_unlink("/print");
+	sem_close(args->is_dead);
+	sem_unlink("/is_dead");
+	sem_close(args->eat);
+	sem_unlink("/eat");
 }
 
-void	*philo_routine(void *arg)
+void	*monitor_dead(void *arg)
 {
-	t_philo	*philo;
+	t_philo	*philos;
+	t_args	*args;
+	int		i;
 
-	philo = (t_philo *)arg;
+	i = 0;
+	philos = (t_philo *)arg;
+	args = philos->args;
+	while (1)
+	{
+		sem_wait(philos->args->eat);
+		if (philos->stop == false && current_time_ms()
+			- philos->last_eat > args->time_to_die)
+		{
+			sem_wait(philos->args->is_dead);
+			args->stop_simulation = 1;
+			sem_post(philos->args->is_dead);
+			sem_post(philos->args->eat);
+			print_state(philos, "died", C_R);
+			return (NULL);
+		}
+		else if (philos->stop == true)
+			return (sem_post(philos->args->eat), NULL);
+		sem_post(philos->args->eat);
+		usleep(200);
+	}
+	return (NULL);
+}
+void	philo_routine(t_philo *philo)
+{
+	pthread_t	monitor_thread;
+
+	if (pthread_create(&monitor_thread, NULL, monitor_dead, philo) != 0)
+		ft_error(E, NULL, E_THREAD_C);
+	if (pthread_detach(monitor_thread) != 0)
+		ft_error(E, NULL, E_THREAD_J);
+	philo->last_eat = philo->args->start;
 	if (philo->id % 2 == 0)
 		usleep(500);
 	while (1)
 	{
-		sem_wait(philo->args->stop_simu);
-		sem_post(philo->args->stop_simu);
 		sem_wait(philo->args->forks);
 		print_state(philo, "has taken a left fork", C_M);
 		sem_wait(philo->args->forks);
 		print_state(philo, "has taken a right fork", C_M);
 		// Philosopher is eating
-		pthread_mutex_lock(&philo->eat_mutex);
+		sem_wait(philo->args->eat);
 		philo->last_eat = current_time_ms();
 		philo->num_eat++;
 		if (philo->num_eat == philo->args->num_eat)
 			philo->stop = true;
-		pthread_mutex_unlock(&philo->eat_mutex);
+		sem_post(philo->args->eat);
 		print_state(philo, "is eating", C_Y);
 		philo_wait(philo->args->time_to_eat);
 		// Philosopher puts down forks
@@ -99,69 +148,6 @@ void	*philo_routine(void *arg)
 		philo_wait(philo->args->time_to_sleep);
 		print_state(philo, "is thinking", C_G);
 	}
-	return (NULL);
-}
-
-void	*monitor_routine(void *arg)
-{
-	t_philo	*philos;
-	t_args	*args;
-	int		stop;
-	int		i;
-
-	i = 0;
-	philos = (t_philo *)arg;
-	args = philos->args;
-	while (1)
-	{
-		stop = 0;
-		pthread_mutex_lock(&philos->eat_mutex);
-		if (philos->stop == false && current_time_ms()
-			- philos->last_eat > args->time_to_die)
-		{
-			sem_wait(philos->args->stop_simu);
-			args->stop_simulation = 1;
-			print_state(philos, "died", C_R);
-			pthread_mutex_unlock(&philos->eat_mutex);
-			break ;
-		}
-		else if (philos->stop == true)
-		{
-			pthread_mutex_unlock(&philos->eat_mutex);
-			break ;
-		}
-		pthread_mutex_unlock(&philos->eat_mutex);
-		usleep(200);
-	}
-	return (NULL);
-}
-
-int	ft_creat_and_join_thread(t_philo *philo, int i)
-{
-	pthread_t	monitor_thread;
-
-	if (pthread_create(&philo[i].thread, NULL, philo_routine, &philo[i]) != 0)
-		return (ft_error(E, NULL, E_THREAD_C), -1);
-	if (pthread_create(&monitor_thread, NULL, monitor_routine, &philo[i]) != 0)
-		return (ft_error(E, NULL, E_THREAD_C), -1);
-	if (pthread_join(philo[i].thread, NULL) != 0)
-		return (ft_error(E, NULL, E_THREAD_J), -1);
-	if (pthread_join(monitor_thread, NULL) != 0)
-		return (ft_error(E, NULL, E_THREAD_J), -1);
-	return (0);
-}
-void	kill_all_child(t_philo *philo)
-{
-	int	i;
-
-	i = 0;
-	while (i < philo->args->num_philo)
-	{
-		if (philo[i].pid > 0)
-			kill(philo[i].pid, SIGKILL);
-		i++;
-	}
-	sem_post(philo->args->stop_simu);
 }
 
 void	do_all_fork(t_philo *philo)
@@ -169,6 +155,7 @@ void	do_all_fork(t_philo *philo)
 	int	i;
 
 	i = 0;
+	philo->args->start = current_time_ms();
 	while (i < philo->args->num_philo)
 	{
 		philo[i].pid = fork();
@@ -179,9 +166,7 @@ void	do_all_fork(t_philo *philo)
 		}
 		if (philo[i].pid == 0)
 		{
-			ft_creat_and_join_thread(philo, i);
-			if (philo->args->stop_simulation == 1)
-				kill_all_child(philo);
+			philo_routine(&philo[i]);
 			close_semaphores(philo->args);
 			pthread_mutex_destroy(&philo[i].eat_mutex);
 			free(philo);
@@ -190,18 +175,57 @@ void	do_all_fork(t_philo *philo)
 		i++;
 	}
 }
+void	monitor_routine(t_philo *philos)
+{
+	int	i;
 
-void	wait_all_child(void)
+	i = 0;
+	sem_wait(philos->args->stop_simu);
+	while (i < philos->args->num_philo)
+	{
+		if (philos[i].pid > 0)
+			kill(philos[i].pid, SIGKILL);
+		i++;
+	}
+	sem_post(philos->args->stop_simu);
+	exit(0);
+}
+
+void	wait_all_child(t_philo *philo)
 {
 	pid_t	r_waitpid;
 	int		status;
+	int		i;
 
+	i = 0;
 	while (1)
 	{
 		r_waitpid = waitpid(-1, &status, 0);
-		printf("yo\n");
+		if (i + 1 == philo->args->num_philo)
+		{
+			if (philo->args->pid_killer > 0)
+				kill(philo->args->pid_killer, SIGKILL);
+		}
 		if (r_waitpid == -1)
 			break ;
+		i++;
+	}
+}
+void	fork_monitor(t_philo *philo)
+{
+	philo->args->pid_killer = fork();
+	if (philo->args->pid_killer == -1)
+	{
+		ft_error(E, NULL, E_INIT_STRUCT);
+		exit(1);
+	}
+	if (philo->args->pid_killer == 0)
+	{
+		sem_wait(philo->args->stop_simu);
+		monitor_routine(philo);
+		close_semaphores(philo->args);
+		free(philo);
+		exit(0);
 	}
 }
 
@@ -220,7 +244,8 @@ int	main(int ac, char **av)
 	if (init_philo(&args, &philo) == -1)
 		return (ft_error(E, NULL, E_INIT_STRUCT), 1);
 	do_all_fork(philo);
-	wait_all_child();
+	fork_monitor(philo);
+	wait_all_child(philo);
 	close_semaphores(&args);
 	free(philo);
 	return (0);

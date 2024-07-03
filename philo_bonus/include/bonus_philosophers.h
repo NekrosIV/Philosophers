@@ -6,7 +6,7 @@
 /*   By: kasingh <kasingh@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/18 10:33:02 by kasingh           #+#    #+#             */
-/*   Updated: 2024/07/02 16:51:39 by kasingh          ###   ########.fr       */
+/*   Updated: 2024/07/03 19:08:05 by kasingh          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,10 @@ typedef struct s_args
 	int				num_eat;
 	int				stop_simulation;
 	long int		start;
+	pid_t			pid_killer;
 	sem_t			*forks;
+	sem_t			*eat;
+	sem_t			*is_dead;
 	sem_t			*stop_simu;
 	sem_t			*print;
 }					t_args;

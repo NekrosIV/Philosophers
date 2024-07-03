@@ -6,7 +6,7 @@
 /*   By: kasingh <kasingh@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/21 18:30:48 by kasingh           #+#    #+#             */
-/*   Updated: 2024/07/02 15:50:50 by kasingh          ###   ########.fr       */
+/*   Updated: 2024/07/03 19:08:22 by kasingh          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,6 +96,14 @@ int	init_semaphore(t_args *args)
 	args->print = sem_open("/print", O_CREAT | O_EXCL, 0644, 1);
 	if (args->print == SEM_FAILED)
 		return (-1);
+	sem_unlink("/is_dead");
+	args->is_dead = sem_open("/is_dead", O_CREAT | O_EXCL, 0644, 1);
+	if (args->is_dead == SEM_FAILED)
+		return (-1);
+	sem_unlink("/eat");
+	args->eat = sem_open("/eat", O_CREAT | O_EXCL, 0644, 1);
+	if (args->eat == SEM_FAILED)
+		return (-1);
 	return (0);
 }
 
@@ -113,6 +121,7 @@ int	ft_parse_args(int ac, char **av, t_args *args)
 		args->num_eat = -1;
 	args->start = current_time_ms();
 	args->stop_simulation = 0;
+	args->pid_killer = -1;
 	if (args->num_philo <= 0 || args->time_to_die <= 0 || args->time_to_eat <= 0
 		|| args->time_to_sleep <= 0 || args->num_eat < -1)
 		return (ft_error(E, NULL, E_IARG), -1);
