@@ -6,7 +6,7 @@
 /*   By: kasingh <kasingh@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/21 18:30:48 by kasingh           #+#    #+#             */
-/*   Updated: 2024/07/03 19:08:22 by kasingh          ###   ########.fr       */
+/*   Updated: 2024/07/04 18:40:54 by kasingh          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,7 +89,8 @@ int	init_semaphore(t_args *args)
 	if (args->forks == SEM_FAILED)
 		return (-1);
 	sem_unlink("/stop_simu");
-	args->stop_simu = sem_open("/stop_simu", O_CREAT | O_EXCL, 0644, 1);
+	args->stop_simu = sem_open("/stop_simu", O_CREAT | O_EXCL, 0644,
+			args->num_philo);
 	if (args->stop_simu == SEM_FAILED)
 		return (-1);
 	sem_unlink("/print");

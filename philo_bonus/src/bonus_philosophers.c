@@ -6,7 +6,7 @@
 /*   By: kasingh <kasingh@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/26 17:27:55 by kasingh           #+#    #+#             */
-/*   Updated: 2024/07/03 19:16:01 by kasingh          ###   ########.fr       */
+/*   Updated: 2024/07/04 18:41:12 by kasingh          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,6 @@ int	init_philo(t_args *args, t_philo **philo)
 		(*philo)[i].last_eat = args->start;
 		(*philo)[i].args = args;
 		(*philo)[i].stop = false;
-		pthread_mutex_init(&((*philo)[i].eat_mutex), NULL);
 		i++;
 	}
 	return (0);
@@ -102,8 +101,7 @@ void	*monitor_dead(void *arg)
 			args->stop_simulation = 1;
 			sem_post(philos->args->is_dead);
 			sem_post(philos->args->eat);
-			print_state(philos, "died", C_R);
-			return (NULL);
+			return (print_state(philos, "died", C_R), NULL);
 		}
 		else if (philos->stop == true)
 			return (sem_post(philos->args->eat), NULL);
@@ -112,15 +110,16 @@ void	*monitor_dead(void *arg)
 	}
 	return (NULL);
 }
+
 void	philo_routine(t_philo *philo)
 {
 	pthread_t	monitor_thread;
 
+	philo->last_eat = philo->args->start;
 	if (pthread_create(&monitor_thread, NULL, monitor_dead, philo) != 0)
 		ft_error(E, NULL, E_THREAD_C);
 	if (pthread_detach(monitor_thread) != 0)
 		ft_error(E, NULL, E_THREAD_J);
-	philo->last_eat = philo->args->start;
 	if (philo->id % 2 == 0)
 		usleep(500);
 	while (1)
@@ -166,9 +165,9 @@ void	do_all_fork(t_philo *philo)
 		}
 		if (philo[i].pid == 0)
 		{
+			sem_wait(philo->args->stop_simu);
 			philo_routine(&philo[i]);
 			close_semaphores(philo->args);
-			pthread_mutex_destroy(&philo[i].eat_mutex);
 			free(philo);
 			exit(0);
 		}
@@ -221,7 +220,6 @@ void	fork_monitor(t_philo *philo)
 	}
 	if (philo->args->pid_killer == 0)
 	{
-		sem_wait(philo->args->stop_simu);
 		monitor_routine(philo);
 		close_semaphores(philo->args);
 		free(philo);
