@@ -1,7 +1,7 @@
 NAME = philo
 BONUS_NAME = philo_bonus
 CC = cc
-CFLAGS = -Wall -Wextra -Werror -pthread
+CFLAGS = -Wall -Wextra -Werror -pthread -g3
 
 SRCS = ./src/bonus_philosophers.c  ./src/bonus_mini_lib.c ./src/bonus_parrsing.c ./src/bonus_free_err.c ./src/bonus_ft_itoa_nosigne.c  ./src/bonus_time.c 
 BONUS_SRCS = 
