@@ -6,7 +6,7 @@
 /*   By: kasingh <kasingh@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/22 15:47:09 by kasingh           #+#    #+#             */
-/*   Updated: 2024/06/28 16:09:17 by kasingh          ###   ########.fr       */
+/*   Updated: 2024/07/05 18:56:22 by kasingh          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,7 @@ void	wait_all_philo(t_philo *philo)
 		usleep(100);
 	}
 }
+
 void	initialize_philo(t_philo *philo)
 {
 	pthread_mutex_lock(&philo->args->start_mutex);

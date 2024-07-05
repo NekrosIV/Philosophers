@@ -6,7 +6,7 @@
 /*   By: kasingh <kasingh@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/18 10:33:02 by kasingh           #+#    #+#             */
-/*   Updated: 2024/07/03 19:08:05 by kasingh          ###   ########.fr       */
+/*   Updated: 2024/07/05 18:43:19 by kasingh          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,6 +69,7 @@ typedef struct s_args
 	sem_t			*is_dead;
 	sem_t			*stop_simu;
 	sem_t			*print;
+	sem_t			*wait_philo;
 }					t_args;
 
 typedef struct s_philo
@@ -94,8 +95,30 @@ void				ft_putstr_fd(char *s, int fd);
 int					ft_atoi(char *s);
 int					ft_strncmp(const char *s1, const char *s2, size_t n);
 
+/************************ FORK.C ***************************/
+void				do_all_fork(t_philo *philo);
+void				kill_all_fork(t_philo *philos);
+void				wait_all_child(t_philo *philo);
+
+/*********************** MONITOR.C *************************/
+void				start_routine_thread(t_philo *philo,
+						pthread_t *routine_thread);
+int					check_death(t_philo *philo);
+void				clean_exit(t_philo *philo, t_philo *philos,
+						pthread_t routine_thread);
+void				child(t_philo *philo, t_philo *philos);
+
+/*********************** ROUTINE.C *************************/
+void				print_state(t_philo *philo, char *msg, char *color);
+int					check_stop_simulation(t_philo *philo);
+void				eat(t_philo *philo);
+void				put_down_forks(t_philo *philo);
+void				sleep_and_think(t_philo *philo);
+void				*philo_routine(void *arg);
+
 /*********************** FREE_ERR.C ************************/
 void				ft_error(char *s1, char *fautif, char *err);
+void				close_semaphores(t_args *args);
 
 /********************** ITOA_NOSIGNE.C *********************/
 char				*ft_itoa_nosigne(long int n);
