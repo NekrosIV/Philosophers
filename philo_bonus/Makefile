@@ -34,6 +34,7 @@ RESET	:= \033[00m
 
 all: $(NAME)
 
+bonus: $(NAME)
 
 $(NAME): $(OBJS)
 	@$(CC) $(CFLAGS) -I$(HEADERS) -o $@ $(OBJS) -L ${LIBFTDIR} -lft
@@ -90,4 +91,4 @@ fclean: clean
 	
 re: fclean all
 
-.PHONY : all clean fclean re 
+.PHONY : all clean fclean re bonus

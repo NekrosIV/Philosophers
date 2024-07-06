@@ -6,7 +6,7 @@
 /*   By: kasingh <kasingh@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/05 12:04:40 by kasingh           #+#    #+#             */
-/*   Updated: 2024/07/05 18:40:06 by kasingh          ###   ########.fr       */
+/*   Updated: 2024/07/06 12:15:48 by kasingh          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,8 +42,9 @@ int	check_death(t_philo *philo)
 
 void	clean_exit(t_philo *philo, t_philo *philos, pthread_t routine_thread)
 {
-	if (pthread_join(routine_thread, NULL) != 0)
-		ft_error(E, NULL, E_THREAD_J);
+	if (pthread_detach(routine_thread) != 0)
+		ft_error(E, NULL, E_THREAD_D);
+	usleep(100000);
 	close_semaphores(philo->args);
 	free(philos);
 	exit(1);

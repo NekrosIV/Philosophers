@@ -6,7 +6,7 @@
 /*   By: kasingh <kasingh@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/22 15:47:09 by kasingh           #+#    #+#             */
-/*   Updated: 2024/07/05 18:56:22 by kasingh          ###   ########.fr       */
+/*   Updated: 2024/07/06 11:46:27 by kasingh          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,7 @@ void	initialize_philo(t_philo *philo)
 	philo->args->start_count++;
 	pthread_mutex_unlock(&philo->args->start_mutex);
 	pthread_mutex_lock(&philo->eat_mutex);
-	philo->last_eat = current_time_ms();
+	philo->last_eat = philo->args->start;
 	pthread_mutex_unlock(&philo->eat_mutex);
 	wait_all_philo(philo);
 	if (philo->id % 2 != 0)
