@@ -6,7 +6,7 @@
 /*   By: kasingh <kasingh@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/18 10:33:02 by kasingh           #+#    #+#             */
-/*   Updated: 2024/07/05 18:43:19 by kasingh          ###   ########.fr       */
+/*   Updated: 2024/07/06 15:05:42 by kasingh          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,7 +112,7 @@ void				child(t_philo *philo, t_philo *philos);
 void				print_state(t_philo *philo, char *msg, char *color);
 int					check_stop_simulation(t_philo *philo);
 void				eat(t_philo *philo);
-void				put_down_forks(t_philo *philo);
+bool				take_forks(t_philo *philo);
 void				sleep_and_think(t_philo *philo);
 void				*philo_routine(void *arg);
 

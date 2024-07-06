@@ -6,7 +6,7 @@
 /*   By: kasingh <kasingh@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/05 11:44:54 by kasingh           #+#    #+#             */
-/*   Updated: 2024/07/05 18:41:32 by kasingh          ###   ########.fr       */
+/*   Updated: 2024/07/06 15:06:19 by kasingh          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,19 @@ int	check_stop_simulation(t_philo *philo)
 	return (0);
 }
 
+bool	take_forks(t_philo *philo)
+{
+	sem_wait(philo->args->forks);
+	if (check_stop_simulation(philo))
+		return (false);
+	print_state(philo, "has taken a left fork", C_M);
+	sem_wait(philo->args->forks);
+	if (check_stop_simulation(philo))
+		return (false);
+	print_state(philo, "has taken a right fork", C_M);
+	return (true);
+}
+
 void	eat(t_philo *philo)
 {
 	sem_wait(philo->args->eat);
@@ -34,12 +47,6 @@ void	eat(t_philo *philo)
 	sem_post(philo->args->eat);
 	print_state(philo, "is eating", C_Y);
 	philo_wait(philo->args->time_to_eat);
-}
-
-void	put_down_forks(t_philo *philo)
-{
-	sem_post(philo->args->forks);
-	sem_post(philo->args->forks);
 }
 
 void	sleep_and_think(t_philo *philo)
@@ -56,18 +63,15 @@ void	*philo_routine(void *arg)
 	philo = (t_philo *)arg;
 	while (1)
 	{
-		sem_wait(philo->args->forks);
-		print_state(philo, "has taken a left fork", C_M);
-		sem_wait(philo->args->forks);
-		if (check_stop_simulation(philo))
+		if (take_forks(philo) == 0)
 			return (NULL);
-		print_state(philo, "has taken a right fork", C_M);
 		if (check_stop_simulation(philo))
 			return (NULL);
 		eat(philo);
 		if (check_stop_simulation(philo))
 			return (NULL);
-		put_down_forks(philo);
+		sem_post(philo->args->forks);
+		sem_post(philo->args->forks);
 		if (check_stop_simulation(philo) || philo->stop == true)
 			return (NULL);
 		sleep_and_think(philo);

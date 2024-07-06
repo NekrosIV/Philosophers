@@ -6,7 +6,7 @@
 /*   By: kasingh <kasingh@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/05 12:27:05 by kasingh           #+#    #+#             */
-/*   Updated: 2024/07/05 18:56:04 by kasingh          ###   ########.fr       */
+/*   Updated: 2024/07/06 15:06:34 by kasingh          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,6 @@ void	kill_all_fork(t_philo *philos)
 	i = 0;
 	while (i < philos->args->num_philo)
 	{
-		printf("kill %d\n", i + 1);
 		if (philos[i].pid > 0)
 			kill(philos[i].pid, SIGKILL);
 		i++;
